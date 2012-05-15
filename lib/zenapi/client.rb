@@ -25,6 +25,10 @@ module ZenApi
       args.merge! :client => self
       self.schema = ZenApi::Schema.new(args, &block)
     end
+
+    def call
+      Call.new :schema => schema, :client => self
+    end
   end
 
 end
