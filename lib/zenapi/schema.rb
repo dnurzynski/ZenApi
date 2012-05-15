@@ -20,9 +20,9 @@ module ZenApi
     end
 
     def resources name, args = {}, &block
-      child = define_path name, args, &block
-
-      child.define_path :show, :path => ':id'
+      child = define_path name, args
+      show = child.define_path :show, :path => ':id'
+      show.instance_eval &block if block_given?
     end
 
     def define_path name, args = {}, &block

@@ -25,6 +25,7 @@ module ZenApi
           end
 
           resources :projects do
+            resources :members
           end
 
         end
@@ -45,6 +46,14 @@ module ZenApi
 
       it '#call.projects.show(1).path - eql "/projects/1"' do
         client.call.projects.show(1).path.should eql "/projects/1"
+      end
+
+      it '#call.projects.members.path - raises NoMethodError"' do
+        expect { client.call.projects.members.path }.to raise_error NoMethodError
+      end
+
+      it '#call.projects.show(2).members.path - eql "/projects/2/members"' do
+        client.call.projects.show(2).members.path.should eql "/projects/2/members"
       end
 
     end
