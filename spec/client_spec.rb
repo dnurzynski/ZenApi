@@ -26,36 +26,153 @@ module ZenApi
 
           resources :projects do
             resources :members
+            resources :invites
+
+            resources :tags do
+              resources :stories
+            end
+
+            resources :stories do
+              resources :tasks
+              resources :tags
+              resources :comments
+              resources :attachments
+            end
+
+            resources :phases do
+              resources :stories
+            end
+
           end
 
         end
 
       end
 
-      it '#call.me.path - eql "/me"' do
-        client.call.me.path.should eql "/me"
+      describe '#call.me' do
+        subject { client.call.me }
+
+        it '#me.path - eql "/me"' do
+          subject.path.should eql "/me"
+        end
+
+        it '#stories.path - eql "/me/stories"' do
+          subject.stories.path.should eql "/me/stories"
+        end
+
+        it '#undefined_path - raises NoMethodError' do
+          expect { subject.undefined_path }.to raise_error NoMethodError
+        end
       end
 
-      it '#call.me.stories.path - eql "/me/stories"' do
-        client.call.me.stories.path.should eql "/me/stories"
-      end
+      describe '#call.projects' do
+        subject { client.call.projects }
 
-      it '#call.me.undefined_path - raises NoMethodError' do
-        expect { client.call.me.undefined_path }.to raise_error NoMethodError
-      end
+        it '#path - eql "/projects"' do
+          subject.path.should eql "/projects"
+        end
 
-      it '#call.projects.show(1).path - eql "/projects/1"' do
-        client.call.projects.show(1).path.should eql "/projects/1"
-      end
+        it '#members.path - raises NoMethodError"' do
+          expect { client.call.projects.members.path }.to raise_error NoMethodError
+        end
 
-      it '#call.projects.members.path - raises NoMethodError"' do
-        expect { client.call.projects.members.path }.to raise_error NoMethodError
-      end
+        describe '#projects.show(1)' do
+          subject { client.call.projects.show(1) }
 
-      it '#call.projects.show(2).members.path - eql "/projects/2/members"' do
-        client.call.projects.show(2).members.path.should eql "/projects/2/members"
-      end
+          it '#path - eql "/projects/1"' do
+            subject.path.should eql "/projects/1"
+          end
 
+          it '#members.path - eql "/projects/1/members"' do
+            subject.members.path.should eql "/projects/1/members"
+          end
+
+          it '#invites.path - eql "/projects/1/invites"' do
+            subject.invites.path.should eql "/projects/1/invites"
+          end
+
+          it '#invites.show(1).path - eql "/projects/1/invites/1"' do
+            subject.invites.show(2).path.should eql "/projects/1/invites/2"
+          end
+
+          it '#stories.path - eql "/projects/1/stories"' do
+            subject.stories.path.should eql "/projects/1/stories"
+          end
+
+          describe '#stories.show(2)' do
+            subject { client.call.projects.show(1).stories.show(2) }
+
+            it '#path - eql "/projects/1/stories/2' do
+              subject.path.should eql "/projects/1/stories/2"
+            end
+
+            it '#tags.path - eql "/projects/1/stories/2/tags"' do
+              subject.tags.path.should eql "/projects/1/stories/2/tags"
+            end
+
+            it '#tags.show(3) - raises NoMethodError' do
+              pending
+            end
+
+            it '#comments.path - eql "/projects/1/stories/2/comments"' do
+              subject.comments.path.should eql "/projects/1/stories/2/comments"
+            end
+
+            it '#comments.show(3).path - eql "/projects/1/stories/2/comments/3"' do
+              subject.comments.show(3).path.should eql "/projects/1/stories/2/comments/3"
+            end
+
+            it '#attachments.path - eql "/projects/1/stories/2/attachments"' do
+              subject.attachments.path.should eql "/projects/1/stories/2/attachments"
+            end
+
+            it '#attachments.show(3).path - eql "/projects/1/stories/2/attachments/3"' do
+              subject.attachments.show(3).path.should eql "/projects/1/stories/2/attachments/3"
+            end
+          end
+
+          it '#phases.path - eql "/projects/1/phases"' do
+            subject.phases.path.should eql "/projects/1/phases"
+          end
+
+          describe "#phases.show(2)" do
+            subject { client.call.projects.show(1).phases.show(2) }
+
+            it '#path - eql "/projects/1/phases/2' do
+              subject.path.should eql "/projects/1/phases/2"
+            end
+
+            it '#stories.path - eql "/projects/1/phases/2/stories' do
+              subject.stories.path.should eql "/projects/1/phases/2/stories"
+            end
+
+            it '#stories.show(3) - raises NoMethodError' do
+              pending
+            end
+          end
+
+          it '#tags.path - eql "/projects/1/tags"' do
+            subject.tags.path.should eql "/projects/1/tags"
+          end
+
+          describe "#tags.show(2)" do
+            subject { client.call.projects.show(1).tags.show(2) }
+
+            it '#path - eql "/projects/1/tags/2' do
+              subject.path.should eql "/projects/1/tags/2"
+            end
+
+            it '#stories.path - eql "/projects/1/tags/2/stories' do
+              subject.stories.path.should eql "/projects/1/tags/2/stories"
+            end
+
+            it '#stories.show(3) - raises NoMethodError' do
+              pending
+            end
+          end
+
+        end
+      end
     end
   end
 end
