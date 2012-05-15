@@ -23,6 +23,10 @@ module ZenApi
           resource :me do
             resources :stories
           end
+
+          resources :projects do
+          end
+
         end
 
       end
@@ -37,6 +41,10 @@ module ZenApi
 
       it '#call.me.undefined_path - raises NoMethodError' do
         expect { client.call.me.undefined_path }.to raise_error NoMethodError
+      end
+
+      it '#call.projects.show(1).path - eql "/projects/1"' do
+        client.call.projects.show(1).path.should eql "/projects/1"
       end
 
     end
