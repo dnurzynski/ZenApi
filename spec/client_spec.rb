@@ -27,6 +27,9 @@ module ZenApi
           resources :projects do
             resources :members
             resources :invites
+            resources :roles do
+              resources :members
+            end
 
             resources :tags do
               resources :stories
@@ -129,6 +132,19 @@ module ZenApi
             it '#attachments.show(3).path - eql "/projects/1/stories/2/attachments/3"' do
               subject.attachments.show(3).path.should eql "/projects/1/stories/2/attachments/3"
             end
+
+            it '#tasks.path - eql "/projects/1/stories/2/tasks"' do
+              subject.tasks.path.should eql "/projects/1/stories/2/tasks"
+            end
+
+            describe "#tasks.show(3)" do
+              subject { client.call.projects.show(1).stories.show(2).tasks.show(3) }
+              it '#path - eql "/projects/1/stories/2/tasks/3' do
+                subject.path.should eql "/projects/1/stories/2/tasks/3"
+              end
+            end
+
+
           end
 
           it '#phases.path - eql "/projects/1/phases"' do
@@ -167,6 +183,26 @@ module ZenApi
             end
 
             it '#stories.show(3) - raises NoMethodError' do
+              pending
+            end
+          end
+
+          it '#roles.path - eql "/projects/1/roles"' do
+            subject.roles.path.should eql "/projects/1/roles"
+          end
+
+          describe "#roles.show(2)" do
+            subject { client.call.projects.show(1).roles.show(2) }
+
+            it '#path - eql "/projects/1/roles/2' do
+              subject.path.should eql "/projects/1/roles/2"
+            end
+
+            it '#members.path - eql "/projects/1/roles/2/members' do
+              subject.members.path.should eql "/projects/1/roles/2/members"
+            end
+
+            it '#members.show(3) - raises NoMethodError' do
               pending
             end
           end
