@@ -1,9 +1,8 @@
 module ZenApi
   class Schema
-    attr_accessor :client, :path, :paths, :name
+    attr_accessor :path, :paths, :name
 
     def initialize(args = {}, &block)
-      @client      = args[:client]
       @path        = args[:path]   || ""
       @paths       = args[:paths]  || {}
       @tokens      = []
@@ -26,7 +25,6 @@ module ZenApi
     end
 
     def define_path name, args = {}, &block
-      args[:client]   = client
       args[:path]   ||= name.to_s
 
       child = @paths[name] = Schema.new args
