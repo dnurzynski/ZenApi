@@ -5,7 +5,6 @@ module ZenApi
     def initialize(args = {}, &block)
       @path        = args[:path]   || ""
       @paths       = args[:paths]  || {}
-      @tokens      = []
 
       instance_eval &block if block_given?
       self
