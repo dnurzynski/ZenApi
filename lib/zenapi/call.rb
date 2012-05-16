@@ -1,10 +1,10 @@
 module ZenApi
   class Call
-    attr_accessor :schema, :api
+    attr_accessor :schema, :client
 
     def initialize args = {}
       @schema = args[:schema]
-      @api    = args[:api]
+      @client = args[:client]
       @path   = [@schema.path]
     end
 
@@ -32,7 +32,11 @@ module ZenApi
     end
 
     def path
-      @path.join('/')
+      @path.reject{|p| p.nil? || p == "" }.join('/')
+    end
+
+    def execute method_sym, args = {}
+      client.conn.send(method_sym, path, args).body
     end
 
     def method_missing method_sym, *args, &block
@@ -40,6 +44,8 @@ module ZenApi
     rescue NoMethodError
       if schema.paths.include? method_sym
         process schema.paths[method_sym], *args
+      elsif schema.requests.keys.include? method_sym
+        execute schema.requests[method_sym], *args
       else
         raise NoMethodError, "Udefined path - '#{method_sym}'"
       end

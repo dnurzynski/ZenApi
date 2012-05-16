@@ -1,10 +1,11 @@
 module ZenApi
   class Schema
-    attr_accessor :path, :paths, :name
+    attr_accessor :path, :paths, :name, :requests
 
     def initialize(args = {}, &block)
-      @path        = args[:path]   || ""
-      @paths       = args[:paths]  || {}
+      @path     = args[:path]     || ""
+      @paths    = args[:paths]    || {}
+      @requests = args[:requests] || {}
 
       instance_eval &block if block_given?
       self
@@ -18,8 +19,17 @@ module ZenApi
     end
 
     def resources name, args = {}, &block
+      args[:requests] ||= {}
+      args[:requests].merge! :all => :get, :create => :post
+
       child = define_path name, args
-      show = child.define_path :show, :path => ':id'
+      show = child.define_path :show,
+        :path     => ':id',
+        :requests => {
+          :find    => :get,
+          :update  => :put,
+          :destroy => :delete
+        }
       show.instance_eval &block if block_given?
     end
 
@@ -30,7 +40,6 @@ module ZenApi
       child.instance_eval &block if block_given?
       child
     end
-
 
   end
 end
